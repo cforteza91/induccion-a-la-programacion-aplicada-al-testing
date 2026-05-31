@@ -28,7 +28,13 @@ FUNCIONALIDADES DE http://cestore.ces.com.uy/adminces/
 * VER USUARIOS
         - Usuarios registrados en el sistema (datos de usuarios, botón borrar usuarios)
 
+* ELIMINAR USUARIOS
+        - Eliminar usuarios registrados
+
 * VER PERFIL DE USUARIO LOGUEADO
+        - Detalles del perfil (Nombre, apellido, email, país, perfil)
+
+* EDITAR PERFIL
         - Detalles del perfil (Nombre, apellido, email, país, perfil)
 
 * CERRAR SESIÓN
