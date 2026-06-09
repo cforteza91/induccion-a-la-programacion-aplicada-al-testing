@@ -40,5 +40,91 @@ FUNCIONALIDADES DE http://cestore.ces.com.uy/adminces/
 * CERRAR SESIÓN
         - Cerrar la sesión activa del usuario logueado
 
-  
-  
+
+
+DIAGRAMA DE CLASES UML
++--------------------------------------------------+
+| Usuario                                         |
++--------------------------------------------------+
+| - nombre: String                                |
+| - apellido: String                              |
+| - paisDeNacimiento: String                      |
+| - email: String                                 |
+| - contrasena: String                            |
++--------------------------------------------------+
+| + Usuario(nombre: String,                       |
+|           apellido: String,                     |
+|           paisDeNacimiento: String,             |
+|           email: String,                        |
+|           contrasena: String)                   |
+| + getNombre(): String                           |
+| + setNombre(nombre: String): void               |
+| + getApellido(): String                         |
+| + setApellido(apellido: String): void           |
+| + getPaisDeNacimiento(): String                 |
+| + setPaisDeNacimiento(paisDeNacimiento: String): void |
+| + getEmail(): String                            |
+| + setEmail(email: String): void                 |
+| + getContrasena(): String                       |
+| + setContrasena(contrasena: String): void       |
+| + validarCredenciales(emailIngresado: String,   |
+|                        contrasenaIngresada: String): boolean |
+| + getTipoUsuario(): String                      |
++--------------------------------------------------+
+
+
++--------------------------------------------------+
+| Admin                                           |
++--------------------------------------------------+
+|                                                  |
++--------------------------------------------------+
+| + Admin(nombre: String,                         |
+|         apellido: String,                       |
+|         paisDeNacimiento: String,               |
+|         email: String,                          |
+|         contrasena: String)                     |
+| + getTipoUsuario(): String                      |
++--------------------------------------------------+
+
+
++--------------------------------------------------+
+| Tester                                          |
++--------------------------------------------------+
+|                                                  |
++--------------------------------------------------+
+| + Tester(nombre: String,                        |
+|          apellido: String,                      |
+|          paisDeNacimiento: String,              |
+|          email: String,                         |
+|          contrasena: String)                    |
+| + getTipoUsuario(): String                      |
++--------------------------------------------------+
+
+
++--------------------------------------------------+
+| SistemaUsuarios                                 |
++--------------------------------------------------+
+| - usuarios: Usuario[]                           |
+| - cantidadUsuarios: int                         |
++--------------------------------------------------+
+| + SistemaUsuarios()                             |
+| - cargarUsuariosDePrueba(): void                |
+| + registrarUsuario(nuevoUsuario: Usuario): boolean |
+| - buscarUsuarioPorEmail(email: String): Usuario |
+| + existeUsuario(email: String): boolean         |
+| + login(email: String, contrasena: String): Usuario |
+| + listarUsuarios(): void                        |
++--------------------------------------------------+
+
+
++--------------------------------------------------+
+| Main                                            |
++--------------------------------------------------+
+|                                                  |
++--------------------------------------------------+
+| + main(args: String[]): void                    |
+| - realizarLogin(scan: Scanner,                  |
+|                 sistema: SistemaUsuarios): void |
+| - registrarUsuario(scan: Scanner,               |
+|                    sistema: SistemaUsuarios): void |
++--------------------------------------------------+
