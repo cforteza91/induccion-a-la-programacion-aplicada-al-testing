@@ -1,66 +1,66 @@
 package AdminCES;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class SistemaUsuarios {
 
-    private Usuario[] usuarios;
-    private int cantidadUsuarios;
+    private final List<Usuario> usuarios;
 
     public SistemaUsuarios() {
-        usuarios = new Usuario[10];
-        cantidadUsuarios = 0;
+        usuarios = new ArrayList<>();
         cargarUsuariosDePrueba();
     }
 
     private void cargarUsuariosDePrueba() {
-        usuarios[cantidadUsuarios] = new Admin(
+
+        usuarios.add(new Admin(
                 "Carlos",
                 "Forteza",
                 "Uruguay",
                 "cforteza@ces.com.uy",
                 "12345"
-        );
-        cantidadUsuarios++;
+        ));
 
-        usuarios[cantidadUsuarios] = new Tester(
+        usuarios.add(new Tester(
                 "Luis",
                 "Suarez",
                 "Uruguay",
                 "lsuarez@ces.com.uy",
                 "12345"
-        );
-        cantidadUsuarios++;
+        ));
 
-        usuarios[cantidadUsuarios] = new Tester(
+        usuarios.add(new Tester(
                 "Edinson",
                 "Cavani",
                 "Uruguay",
                 "ecavani@ces.com.uy",
                 "12345"
-        );
-        cantidadUsuarios++;
+        ));
     }
 
     public boolean registrarUsuario(Usuario nuevoUsuario) {
-        if (cantidadUsuarios >= usuarios.length) {
-            System.out.println("No hay espacio disponible para registrar más usuarios.");
-            return false;
-        }
 
         if (existeUsuario(nuevoUsuario.getEmail())) {
             System.out.println("El usuario ya existe.");
             return false;
         }
 
-        usuarios[cantidadUsuarios] = nuevoUsuario;
-        cantidadUsuarios++;
-
+        usuarios.add(nuevoUsuario);
         return true;
     }
 
-    private Usuario buscarUsuarioPorEmail(String email) {
-        for (int i = 0; i < cantidadUsuarios; i++) {
-            if (usuarios[i].getEmail().equalsIgnoreCase(email)) {
-                return usuarios[i];
+    public Usuario buscarUsuarioPorEmail(String email) {
+
+        if (email == null || email.isBlank()) {
+            return null;
+        }
+
+        String emailBuscado = email.trim();
+
+        for (Usuario usuario : usuarios) {
+            if (usuario.getEmail().equalsIgnoreCase(emailBuscado)) {
+                return usuario;
             }
         }
 
@@ -72,25 +72,19 @@ public class SistemaUsuarios {
     }
 
     public Usuario login(String email, String contrasena) {
+
         Usuario usuarioEncontrado = buscarUsuarioPorEmail(email);
 
-        if (usuarioEncontrado != null && usuarioEncontrado.validarCredenciales(email, contrasena)) {
+        if (usuarioEncontrado != null
+                && usuarioEncontrado.validarCredenciales(email, contrasena)) {
+
             return usuarioEncontrado;
         }
 
         return null;
     }
 
-    public void listarUsuarios() {
-        System.out.println("Usuarios cargados en el sistema:");
-
-        for (int i = 0; i < cantidadUsuarios; i++) {
-            System.out.println("--------------------");
-            System.out.println("Nombre: " + usuarios[i].getNombre());
-            System.out.println("Apellido: " + usuarios[i].getApellido());
-            System.out.println("Email: " + usuarios[i].getEmail());
-            System.out.println("País de nacimiento: " + usuarios[i].getPaisDeNacimiento());
-            System.out.println("Tipo de usuario: " + usuarios[i].getTipoUsuario());
-        }
+    public List<Usuario> listarUsuarios() {
+        return new ArrayList<>(usuarios);
     }
 }

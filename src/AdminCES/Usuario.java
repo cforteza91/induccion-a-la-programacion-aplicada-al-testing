@@ -1,6 +1,6 @@
 package AdminCES;
 
-public class Usuario {
+public abstract class Usuario {
 
     private String nombre;
     private String apellido;
@@ -41,7 +41,7 @@ public class Usuario {
                 && this.contrasena.equals(contrasenaIngresada);
     }
 
-    public String getTipoUsuario() {
-        return "Usuario";
+    public abstract String getTipoUsuario();
+    public abstract String realizarTareaPrincipal();
+
     }
-}

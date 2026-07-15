@@ -1,141 +1,196 @@
 package AdminCES;
 
+import java.util.List;
 import java.util.Scanner;
 
 public class Main {
 
     public static void main(String[] args) {
 
-        Scanner scan = new Scanner(System.in);
+        Scanner scanner = new Scanner(System.in);
         SistemaUsuarios sistema = new SistemaUsuarios();
 
-        String opcion;
+        int opcion;
 
         do {
-            System.out.println();
-            System.out.println("===== SISTEMA DE USUARIOS CES =====");
-            System.out.println("1 - Login");
+            System.out.println("\n===== SISTEMA DE USUARIOS =====");
+            System.out.println("1 - Iniciar sesión");
             System.out.println("2 - Registrar usuario");
             System.out.println("3 - Listar usuarios");
+            System.out.println("4 - Buscar usuario");
             System.out.println("0 - Salir");
-            System.out.print("Ingrese una opción: ");
+            System.out.print("Seleccione una opción: ");
 
-            opcion = scan.nextLine();
+            opcion = Integer.parseInt(scanner.nextLine());
 
-            if (opcion.equals("1")) {
-                realizarLogin(scan, sistema);
+            switch (opcion) {
+                case 1:
+                    iniciarSesion(sistema, scanner);
+                    break;
 
-            } else if (opcion.equals("2")) {
-                registrarUsuario(scan, sistema);
+                case 2:
+                    registrarUsuario(sistema, scanner);
+                    break;
 
-            } else if (opcion.equals("3")) {
-                sistema.listarUsuarios();
+                case 3:
+                    listarUsuarios(sistema);
+                    break;
 
-            } else if (opcion.equals("0")) {
-                System.out.println("Ha salido del sistema");
+                case 4:
+                    buscarUsuario(sistema, scanner);
+                    break;
 
-            } else {
-                System.out.println("No existe la opción indicada.");
+                case 0:
+                    System.out.println("Saliendo del sistema...");
+                    break;
+
+                default:
+                    System.out.println("Opción inválida.");
             }
 
-        } while (!opcion.equals("0"));
+        } while (opcion != 0);
 
-        scan.close();
+        scanner.close();
     }
 
-    private static void realizarLogin(Scanner scan, SistemaUsuarios sistema) {
-
-        System.out.println();
-        System.out.println("===== LOGIN =====");
-
+    private static void iniciarSesion(
+            SistemaUsuarios sistema,
+            Scanner scanner
+    ) {
         System.out.print("Ingrese email: ");
-        String emailIngresado = scan.nextLine();
+        String email = scanner.nextLine();
 
         System.out.print("Ingrese contraseña: ");
-        String contrasenaIngresada = scan.nextLine();
+        String contrasena = scanner.nextLine();
 
-        Usuario usuarioLogueado = sistema.login(emailIngresado, contrasenaIngresada);
+        Usuario usuario = sistema.login(email, contrasena);
 
-        if (usuarioLogueado != null) {
-            System.out.println("Login exitoso.");
-            System.out.println("Bienvenido, " + usuarioLogueado.getNombre());
+        if (usuario != null) {
+            System.out.println("Inicio de sesión exitoso.");
+            System.out.println("Bienvenido, "
+                    + usuario.getNombre() + ".");
+            System.out.println("Tipo de usuario: "
+                    + usuario.getTipoUsuario());
+            System.out.println("Tarea principal: "
+                    + usuario.realizarTareaPrincipal());
         } else {
-            System.out.println("Login incorrecto.");
+            System.out.println("Email o contraseña incorrectos.");
         }
     }
 
-    private static void registrarUsuario(Scanner scan, SistemaUsuarios sistema) {
-
-        System.out.println();
-        System.out.println("===== REGISTRO DE USUARIO =====");
+    private static void registrarUsuario(
+            SistemaUsuarios sistema,
+            Scanner scanner
+    ) {
+        System.out.println("\n===== REGISTRO DE USUARIO =====");
 
         System.out.print("Ingrese nombre: ");
-        String nombre = scan.nextLine();
+        String nombre = scanner.nextLine();
 
         System.out.print("Ingrese apellido: ");
-        String apellido = scan.nextLine();
-
-        System.out.print("Ingrese email: ");
-        String email = scan.nextLine();
-
-        if (sistema.existeUsuario(email)) {
-            System.out.println("El usuario ya existe.");
-            return;
-        }
-
-        System.out.print("Ingrese contraseña: ");
-        String contrasena = scan.nextLine();
-
-        System.out.print("Ingrese contraseña nuevamente: ");
-        String contrasena2 = scan.nextLine();
-
-        if (!contrasena.equals(contrasena2)) {
-            System.out.println("La contraseña no coincide.");
-            return;
-        }
+        String apellido = scanner.nextLine();
 
         System.out.print("Ingrese país de nacimiento: ");
-        String paisDeNacimiento = scan.nextLine();
+        String pais = scanner.nextLine();
 
-        System.out.println("Seleccione tipo de usuario:");
+        System.out.print("Ingrese email: ");
+        String email = scanner.nextLine();
+
+        System.out.print("Ingrese contraseña: ");
+        String contrasena = scanner.nextLine();
+
+        System.out.println("Seleccione el tipo de usuario:");
         System.out.println("1 - Admin");
         System.out.println("2 - Tester");
         System.out.print("Opción: ");
-        String tipoUsuario = scan.nextLine();
+
+        int tipoUsuario = Integer.parseInt(scanner.nextLine());
 
         Usuario nuevoUsuario;
 
-        if (tipoUsuario.equals("1")) {
-
+        if (tipoUsuario == 1) {
             nuevoUsuario = new Admin(
                     nombre,
                     apellido,
-                    paisDeNacimiento,
+                    pais,
                     email,
                     contrasena
             );
-
-        } else if (tipoUsuario.equals("2")) {
-
+        } else if (tipoUsuario == 2) {
             nuevoUsuario = new Tester(
                     nombre,
                     apellido,
-                    paisDeNacimiento,
+                    pais,
                     email,
                     contrasena
             );
-
         } else {
             System.out.println("Tipo de usuario inválido.");
             return;
         }
 
-        boolean registroExitoso = sistema.registrarUsuario(nuevoUsuario);
+        boolean registrado =
+                sistema.registrarUsuario(nuevoUsuario);
 
-        if (registroExitoso) {
-            System.out.println("Registro de usuario exitoso.");
-        } else {
-            System.out.println("No se pudo registrar el usuario.");
+        if (registrado) {
+            System.out.println("Usuario registrado exitosamente.");
         }
+    }
+
+    private static void listarUsuarios(
+            SistemaUsuarios sistema
+    ) {
+        List<Usuario> usuarios =
+                sistema.listarUsuarios();
+
+        if (usuarios.isEmpty()) {
+            System.out.println("No hay usuarios registrados.");
+            return;
+        }
+
+        System.out.println("\n===== LISTA DE USUARIOS =====");
+
+        for (Usuario usuario : usuarios) {
+            mostrarUsuario(usuario);
+        }
+    }
+
+    private static void buscarUsuario(
+            SistemaUsuarios sistema,
+            Scanner scanner
+    ) {
+        System.out.print("Ingrese el email del usuario: ");
+        String email = scanner.nextLine();
+
+        Usuario usuarioEncontrado =
+                sistema.buscarUsuarioPorEmail(email);
+
+        if (usuarioEncontrado == null) {
+            System.out.println(
+                    "No se encontró ningún usuario con ese email."
+            );
+            return;
+        }
+
+        System.out.println("\nUsuario encontrado:");
+        mostrarUsuario(usuarioEncontrado);
+    }
+
+    private static void mostrarUsuario(
+            Usuario usuario
+    ) {
+        System.out.println("--------------------");
+        System.out.println("Nombre: "
+                + usuario.getNombre());
+        System.out.println("Apellido: "
+                + usuario.getApellido());
+        System.out.println("País de nacimiento: "
+                + usuario.getPaisDeNacimiento());
+        System.out.println("Email: "
+                + usuario.getEmail());
+        System.out.println("Tipo de usuario: "
+                + usuario.getTipoUsuario());
+        System.out.println("Tarea principal: "
+                + usuario.realizarTareaPrincipal());
     }
 }
