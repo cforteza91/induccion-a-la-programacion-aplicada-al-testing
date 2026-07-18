@@ -1,8 +1,5 @@
-FUNCIONALIDADES DE http://cestore.ces.com.uy/adminces/
-------------------------------------------------------
-
 SISTEMA DE GESTIÓN DE USUARIOS
-
+------------------------------------------------------
 OBJETIVO: Administrar usuarios de tipo "Administrador" y "Tester" desde una aplicación de consola.
 
 
