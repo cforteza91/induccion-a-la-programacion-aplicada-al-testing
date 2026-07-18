@@ -2,13 +2,19 @@ package AdminCES;
 
 public abstract class Usuario {
 
-    private String nombre;
-    private String apellido;
-    private String paisDeNacimiento;
-    private String email;
-    private String contrasena;
+    private final String nombre;
+    private final String apellido;
+    private final String paisDeNacimiento;
+    private final String email;
+    private final String contrasena;
 
-    public Usuario(String nombre, String apellido, String paisDeNacimiento, String email, String contrasena) {
+    protected Usuario(
+            String nombre,
+            String apellido,
+            String paisDeNacimiento,
+            String email,
+            String contrasena
+    ) {
         this.nombre = nombre;
         this.apellido = apellido;
         this.paisDeNacimiento = paisDeNacimiento;
@@ -32,16 +38,17 @@ public abstract class Usuario {
         return email;
     }
 
-    public String getContrasena() {
-        return contrasena;
-    }
-
-    public boolean validarCredenciales(String emailIngresado, String contrasenaIngresada) {
-        return this.email.equalsIgnoreCase(emailIngresado)
-                && this.contrasena.equals(contrasenaIngresada);
+    public boolean validarCredenciales(
+            String emailIngresado,
+            String contrasenaIngresada
+    ) {
+        return emailIngresado != null
+                && contrasenaIngresada != null
+                && email.equalsIgnoreCase(emailIngresado.trim())
+                && contrasena.equals(contrasenaIngresada);
     }
 
     public abstract String getTipoUsuario();
-    public abstract String realizarTareaPrincipal();
 
-    }
+    public abstract String realizarTareaPrincipal();
+}

@@ -9,22 +9,16 @@ public class Admin extends Usuario {
             String email,
             String contrasena
     ) {
-        super(
-                nombre,
-                apellido,
-                paisDeNacimiento,
-                email,
-                contrasena
-        );
+        super(nombre, apellido, paisDeNacimiento, email, contrasena);
     }
 
     @Override
     public String getTipoUsuario() {
-        return "Admin";
+        return "Administrador";
     }
 
     @Override
     public String realizarTareaPrincipal() {
-        return "Gestionar usuarios y permisos del sistema.";
+        return "Gestionar los usuarios del sistema.";
     }
 }

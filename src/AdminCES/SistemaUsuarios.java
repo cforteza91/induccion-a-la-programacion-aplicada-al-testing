@@ -5,29 +5,37 @@ import java.util.List;
 
 public class SistemaUsuarios {
 
-    private final List<Usuario> usuarios;
+    private static final SistemaUsuarios INSTANCIA =
+            new SistemaUsuarios();
 
-    public SistemaUsuarios() {
+    private final List<Usuario> usuarios;
+    private Usuario usuarioLogueado;
+
+    private SistemaUsuarios() {
         usuarios = new ArrayList<>();
         cargarUsuariosDePrueba();
     }
 
-    private void cargarUsuariosDePrueba() {
+    public static SistemaUsuarios getInstancia() {
+        return INSTANCIA;
+    }
 
+    private void cargarUsuariosDePrueba() {
         usuarios.add(new Admin(
                 "Carlos",
                 "Forteza",
                 "Uruguay",
                 "cforteza@ces.com.uy",
-                "12345"
+                "123456"
         ));
 
         usuarios.add(new Tester(
                 "Luis",
-                "Suarez",
+                "Suárez",
                 "Uruguay",
                 "lsuarez@ces.com.uy",
-                "12345"
+                "123456",
+                NivelTester.SENIOR
         ));
 
         usuarios.add(new Tester(
@@ -35,56 +43,232 @@ public class SistemaUsuarios {
                 "Cavani",
                 "Uruguay",
                 "ecavani@ces.com.uy",
-                "12345"
+                "123456",
+                NivelTester.LIDER
         ));
     }
 
-    public boolean registrarUsuario(Usuario nuevoUsuario) {
+    public void registrarAdministrador(
+            String nombre,
+            String apellido,
+            String paisDeNacimiento,
+            String email,
+            String contrasena,
+            String confirmacionContrasena
+    ) throws DatosInvalidosException,
+            EmailDuplicadoException {
 
-        if (existeUsuario(nuevoUsuario.getEmail())) {
-            System.out.println("El usuario ya existe.");
-            return false;
-        }
+        String nombreValidado =
+                ValidadorDatos.validarTextoObligatorio(
+                        nombre,
+                        "nombre"
+                );
 
-        usuarios.add(nuevoUsuario);
-        return true;
+        String apellidoValidado =
+                ValidadorDatos.validarTextoObligatorio(
+                        apellido,
+                        "apellido"
+                );
+
+        String paisValidado =
+                ValidadorDatos.validarTextoObligatorio(
+                        paisDeNacimiento,
+                        "país de nacimiento"
+                );
+
+        String emailValidado =
+                ValidadorDatos.validarEmail(email);
+
+        String contrasenaValidada =
+                ValidadorDatos.validarContrasena(
+                        contrasena
+                );
+
+        ValidadorDatos.validarContrasenasCoincidentes(
+                contrasenaValidada,
+                confirmacionContrasena
+        );
+
+        verificarEmailDisponible(emailValidado);
+
+        usuarios.add(new Admin(
+                nombreValidado,
+                apellidoValidado,
+                paisValidado,
+                emailValidado,
+                contrasenaValidada
+        ));
     }
 
-    public Usuario buscarUsuarioPorEmail(String email) {
+    public void registrarTester(
+            String nombre,
+            String apellido,
+            String paisDeNacimiento,
+            String email,
+            String contrasena,
+            String confirmacionContrasena,
+            NivelTester nivel
+    ) throws DatosInvalidosException,
+            EmailDuplicadoException,
+            AccesoDenegadoException {
 
-        if (email == null || email.isBlank()) {
-            return null;
+        verificarAdministradorLogueado();
+
+        String nombreValidado =
+                ValidadorDatos.validarTextoObligatorio(
+                        nombre,
+                        "nombre"
+                );
+
+        String apellidoValidado =
+                ValidadorDatos.validarTextoObligatorio(
+                        apellido,
+                        "apellido"
+                );
+
+        String paisValidado =
+                ValidadorDatos.validarTextoObligatorio(
+                        paisDeNacimiento,
+                        "país de nacimiento"
+                );
+
+        String emailValidado =
+                ValidadorDatos.validarEmail(email);
+
+        String contrasenaValidada =
+                ValidadorDatos.validarContrasena(
+                        contrasena
+                );
+
+        ValidadorDatos.validarContrasenasCoincidentes(
+                contrasenaValidada,
+                confirmacionContrasena
+        );
+
+        if (nivel == null) {
+            throw new DatosInvalidosException(
+                    "El nivel del tester es obligatorio."
+            );
         }
 
-        String emailBuscado = email.trim();
+        verificarEmailDisponible(emailValidado);
+
+        usuarios.add(new Tester(
+                nombreValidado,
+                apellidoValidado,
+                paisValidado,
+                emailValidado,
+                contrasenaValidada,
+                nivel
+        ));
+    }
+
+    public Usuario iniciarSesion(
+            String email,
+            String contrasena
+    ) throws DatosInvalidosException,
+            CredencialesInvalidasException {
+
+        String emailValidado =
+                ValidadorDatos.validarEmail(email);
+
+        String contrasenaValidada =
+                ValidadorDatos.validarContrasena(
+                        contrasena
+                );
 
         for (Usuario usuario : usuarios) {
-            if (usuario.getEmail().equalsIgnoreCase(emailBuscado)) {
+            if (usuario.validarCredenciales(
+                    emailValidado,
+                    contrasenaValidada
+            )) {
+                usuarioLogueado = usuario;
                 return usuario;
             }
         }
 
-        return null;
+        throw new CredencialesInvalidasException();
     }
 
-    public boolean existeUsuario(String email) {
-        return buscarUsuarioPorEmail(email) != null;
-    }
+    public void cerrarSesion()
+            throws AccesoDenegadoException {
 
-    public Usuario login(String email, String contrasena) {
-
-        Usuario usuarioEncontrado = buscarUsuarioPorEmail(email);
-
-        if (usuarioEncontrado != null
-                && usuarioEncontrado.validarCredenciales(email, contrasena)) {
-
-            return usuarioEncontrado;
+        if (usuarioLogueado == null) {
+            throw new AccesoDenegadoException(
+                    "No hay ninguna sesión iniciada."
+            );
         }
 
-        return null;
+        usuarioLogueado = null;
     }
 
-    public List<Usuario> listarUsuarios() {
+    public boolean haySesionActiva() {
+        return usuarioLogueado != null;
+    }
+
+    public Usuario getUsuarioLogueado()
+            throws AccesoDenegadoException {
+
+        if (usuarioLogueado == null) {
+            throw new AccesoDenegadoException(
+                    "Debe iniciar sesión para acceder a esta opción."
+            );
+        }
+
+        return usuarioLogueado;
+    }
+
+    public List<Usuario> listarUsuarios()
+            throws AccesoDenegadoException {
+
+        verificarAdministradorLogueado();
+
         return new ArrayList<>(usuarios);
+    }
+
+    public Usuario buscarUsuarioPorEmail(String email)
+            throws DatosInvalidosException,
+            UsuarioNoEncontradoException,
+            AccesoDenegadoException {
+
+        verificarAdministradorLogueado();
+
+        String emailValidado =
+                ValidadorDatos.validarEmail(email);
+
+        for (Usuario usuario : usuarios) {
+            if (usuario.getEmail()
+                    .equalsIgnoreCase(emailValidado)) {
+
+                return usuario;
+            }
+        }
+
+        throw new UsuarioNoEncontradoException(
+                emailValidado
+        );
+    }
+
+    private void verificarEmailDisponible(String email)
+            throws EmailDuplicadoException {
+
+        for (Usuario usuario : usuarios) {
+            if (usuario.getEmail()
+                    .equalsIgnoreCase(email)) {
+
+                throw new EmailDuplicadoException(email);
+            }
+        }
+    }
+
+    private void verificarAdministradorLogueado()
+            throws AccesoDenegadoException {
+
+        if (!(usuarioLogueado instanceof Admin)) {
+            throw new AccesoDenegadoException(
+                    "Esta opción está disponible únicamente "
+                            + "para administradores."
+            );
+        }
     }
 }
